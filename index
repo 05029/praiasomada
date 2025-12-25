@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Marcação de Transporte - Tarrafal Transportes</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+            padding-bottom: 60px; /* Espaço para o rodapé */
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            transition: transform 0.3s ease;
+            margin: 20px;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        h2 {
+            color: #495057;
+            font-size: 18px;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #495057;
+        }
+
+        select, input[type="date"], input[type="time"], 
+        input[type="text"], input[type="tel"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            right: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #preco {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+        }
+
+        #confirmacao {
+            display: none;
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            color: #155724;
+        }
+
+        .erro {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .info {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .form-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .required::after {
+            content: ' *';
+            color: #dc3545;
+        }
+
+        .whatsapp-info {
+            background-color: #25D366;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .whatsapp-info a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .whatsapp-info a:hover {
+            text-decoration: underline;
+        }
+
+        /* RODAPÉ */
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .developer-credit {
+            font-size: 13px;
+            color: #495057;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .developer-credit a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .developer-credit a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            footer {
+                padding: 15px 0;
+            }
+            
+            body {
+                padding-bottom: 50px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            footer {
+                position: relative;
+                margin-top: 30px;
+            }
+            
+            body {
+                padding-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Marcação de Transporte - Tarrafal Transportes</h1>
+        
+        <form id="formMarcacao">
+            <!-- SEÇÃO 1: DADOS PESSOAIS -->
+            <div class="form-section">
+                <h2>📋 Dados Pessoais</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome" class="required">Nome Completo:</label>
+                        <input type="text" id="nome" required 
+                               placeholder="Ex: João da Silva"
+                               minlength="3" maxlength="100">
+                        <div class="erro" id="erro-nome">Por favor, digite seu nome completo</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefone" class="required">Telefone:</label>
+                        <input type="tel" id="telefone" required 
+                               placeholder="Ex: 999 99 99"
+                               pattern="[0-9\s]{7,15}">
+                        <div class="info">Formato: 9 dígitos (ex: 999 99 99)</div>
+                        <div class="erro" id="erro-telefone">Digite um número de telefone válido</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="localizacao" class="required">Localização para Recolha:</label>
+                    <input type="text" id="localizacao" required 
+                           placeholder="Ex: Rua Principal, Número, Bairro"
+                           minlength="5" maxlength="200">
+                    <div class="info">Endereço exato onde o transporte deve recolhê-lo</div>
+                    <div class="erro" id="erro-localizacao">Por favor, indique sua localização</div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: DETALHES DA VIAGEM -->
+            <div class="form-section">
+                <h2>📍 Detalhes da Viagem</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="origem" class="required">Origem:</label>
+                        <select id="origem" required>
+                            <option value="">Selecione a origem</option>
+                            <option value="Tarrafal">Tarrafal</option>
+                            <option value="Assomada">Assomada</option>
+                            <option value="Praia">Praia</option>
+                        </select>
+                        <div class="erro" id="erro-origem">Por favor, selecione a origem</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="destino" class="required">Destino:</label>
+                        <select id="destino" required>
+                            <option value="">Selecione o destino</option>
+                            <option value="Tarrafal">Tarrafal</option>
+                            <option value="Assomada">Assomada</option>
+                            <option value="Praia">Praia</option>
+                        </select>
+                        <div class="erro" id="erro-destino">Por favor, selecione o destino</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data" class="required">Data da Viagem:</label>
+                        <input type="date" id="data" required>
+                        <div class="info">Apenas datas futuras</div>
+                        <div class="erro" id="erro-data">Selecione uma data válida</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hora" class="required">Hora da Viagem:</label>
+                        <input type="time" id="hora" required>
+                        <div class="info">Horário: 05:00 - 22:00</div>
+                        <div class="erro" id="erro-hora">Selecione um horário válido</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passageiros">Número de Passageiros:</label>
+                    <select id="passageiros">
+                        <option value="1">1 passageiro</option>
+                        <option value="2">2 passageiros</option>
+                        <option value="3">3 passageiros</option>
+                        <option value="4">4 passageiros</option>
+                        <option value="5">5 ou mais passageiros</option>
+                    </select>
+                    <div class="info">Para 5+ passageiros, entre em contato para veículo adequado</div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 3: OBSERVAÇÕES -->
+            <div class="form-section">
+                <h2>💬 Observações (Opcional)</h2>
+                <div class="form-group">
+                    <label for="observacoes">Observações Especiais:</label>
+                    <textarea id="observacoes" rows="3" 
+                              placeholder="Ex: Bagagem extra, necessidade de acessibilidade, criança pequena, etc."
+                              maxlength="500"></textarea>
+                    <div class="info">Máximo 500 caracteres</div>
+                </div>
+            </div>
+
+            <!-- PREÇO E BOTÃO -->
+            <div id="preco"></div>
+
+            <button type="submit" id="btn-submit">✅ Confirmar Reserva</button>
+        </form>
+
+        <!-- INFORMAÇÃO DO WHATSAPP -->
+        <div id="whatsapp-info" class="whatsapp-info">
+            <p>📱 <strong>Reserva enviada para o WhatsApp!</strong></p>
+            <p>A mensagem foi enviada para o número: <strong>917 71 61</strong></p>
+            <p><a href="#" id="whatsapp-link" target="_blank">Clique aqui para abrir o WhatsApp</a></p>
+        </div>
+
+        <div id="confirmacao"></div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer>
+        <div class="footer-content">
+            <p>© 2024 Tarrafal Transportes - Todos os direitos reservados</p>
+            <p class="developer-credit">
+                Site feito por <a href="https://wa.me/2389177161?text=Olá%20Leonardo,%20vim%20pelo%20site%20do%20Tarrafal%20Transportes" 
+                                  target="_blank" 
+                                  title="Contactar Leonardo Nardy no WhatsApp">
+                    Leonardo Nardy
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Preços das rotas
+        const precos = {
+            'Tarrafal-Assomada': 300,
+            'Assomada-Tarrafal': 300,
+            'Tarrafal-Praia': 600,
+            'Praia-Tarrafal': 600,
+            'Assomada-Praia': 500,
+            'Praia-Assomada': 500
+        };
+
+        // Número WhatsApp para envio
+        const NUMERO_WHATSAPP = "9177161"; // Número sem espaços para URL
+        const NUMERO_DISPLAY = "917 71 61"; // Número formatado para display
+
+        // Cidades disponíveis
+        const cidades = ['Tarrafal', 'Assomada', 'Praia'];
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar data mínima (hoje)
+            const hoje = new Date();
+            const dataFormatada = hoje.toISOString().split('T')[0];
+            document.getElementById('data').min = dataFormatada;
+            
+            // Configurar hora (05:00 - 22:00)
+            document.getElementById('hora').min = '05:00';
+            document.getElementById('hora').max = '22:00';
+            
+            // Event listeners para cálculo de preço
+            document.getElementById('origem').addEventListener('change', function() {
+                atualizarDestinos();
+                calcularPreco();
+            });
+            
+            document.getElementById('destino').addEventListener('change', calcularPreco);
+            document.getElementById('passageiros').addEventListener('change', calcularPreco);
+            
+            // Event listeners para validação
+            document.getElementById('data').addEventListener('change', validarData);
+            document.getElementById('hora').addEventListener('change', validarHora);
+            
+            // Formatar telefone enquanto digita
+            document.getElementById('telefone').addEventListener('input', formatarTelefone);
+            
+            // Calcular preço inicial
+            calcularPreco();
+        });
+
+        // Atualizar opções de destino
+        function atualizarDestinos() {
+            const origem = document.getElementById('origem').value;
+            const destinoSelect = document.getElementById('destino');
+            const destinoAtual = destinoSelect.value;
+            
+            destinoSelect.innerHTML = '<option value="">Selecione o destino</option>';
+            
+            cidades.forEach(cidade => {
+                if (cidade !== origem) {
+                    const option = document.createElement('option');
+                    option.value = cidade;
+                    option.textContent = cidade;
+                    destinoSelect.appendChild(option);
+                }
+            });
+            
+            if (destinoAtual === origem) {
+                destinoSelect.value = '';
+                esconderErro('erro-destino');
+            }
+        }
+
+        // Formatar telefone
+        function formatarTelefone(event) {
+            let valor = event.target.value.replace(/\D/g, '');
+            
+            if (valor.length > 9) {
+                valor = valor.substring(0, 9);
+            }
+            
+            // Formatar: XXX XX XX ou XXX XXX XXX
+            if (valor.length > 6) {
+                valor = valor.replace(/(\d{3})(\d{2})(\d{2})/, '$1 $2 $3');
+            } else if (valor.length > 4) {
+                valor = valor.replace(/(\d{3})(\d{2})/, '$1 $2');
+            }
+            
+            event.target.value = valor;
+        }
+
+        // Calcular preço
+        function calcularPreco() {
+            const origem = document.getElementById('origem').value;
+            const destino = document.getElementById('destino').value;
+            const passageiros = parseInt(document.getElementById('passageiros').value);
+            const precoDiv = document.getElementById('preco');
+            
+            if (origem && destino && origem !== destino) {
+                const rota = `${origem}-${destino}`;
+                let precoBase = precos[rota];
+                
+                if (precoBase) {
+                    // Ajustar preço para múltiplos passageiros
+                    let precoTotal = precoBase;
+                    if (passageiros > 1) {
+                        precoTotal = precoBase * passageiros;
+                        if (passageiros >= 5) {
+                            precoTotal = precoBase * 4; // Desconto para grupos
+                        }
+                    }
+                    
+                    precoDiv.innerHTML = `
+                        <div style="font-size: 16px; color: #495057;">Preço da rota ${origem} → ${destino}:</div>
+                        <div style="font-size: 24px;">${precoTotal} Escudos</div>
+                        ${passageiros > 1 ? `<div style="font-size: 14px; color: #6c757d;">(${precoBase} × ${passageiros} passageiros)</div>` : ''}
+                    `;
+                    precoDiv.style.display = 'block';
+                } else {
+                    precoDiv.textContent = 'Preço não disponível para esta rota';
+                    precoDiv.style.color = '#dc3545';
+                }
+            } else {
+                precoDiv.textContent = 'Selecione origem e destino para ver o preço';
+                precoDiv.style.color = '#6c757d';
+            }
+        }
+
+        // Validações
+        function validarData() {
+            const dataInput = document.getElementById('data');
+            const dataSelecionada = new Date(dataInput.value);
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            
+            if (dataSelecionada < hoje) {
+                mostrarErro('erro-data', 'A data não pode ser no passado');
+                return false;
+            }
+            
+            esconderErro('erro-data');
+            return true;
+        }
+
+        function validarHora() {
+            const horaInput = document.getElementById('hora').value;
+            
+            if (!horaInput) {
+                mostrarErro('erro-hora', 'Selecione um horário');
+                return false;
+            }
+            
+            const hora = parseInt(horaInput.split(':')[0]);
+            
+            if (hora < 5 || hora > 22) {
+                mostrarErro('erro-hora', 'Horário fora do funcionamento (05:00 - 22:00)');
+                return false;
+            }
+            
+            esconderErro('erro-hora');
+            return true;
+        }
+
+        function validarTelefone() {
+            const telefone = document.getElementById('telefone').value;
+            const telefoneNumerico = telefone.replace(/\D/g, '');
+            
+            if (telefoneNumerico.length < 7) {
+                mostrarErro('erro-telefone', 'Digite um telefone válido (mínimo 7 dígitos)');
+                return false;
+            }
+            
+            esconderErro('erro-telefone');
+            return true;
+        }
+
+        function validarNome() {
+            const nome = document.getElementById('nome').value.trim();
+            
+            if (nome.length < 3) {
+                mostrarErro('erro-nome', 'Digite seu nome completo (mínimo 3 caracteres)');
+                return false;
+            }
+            
+            esconderErro('erro-nome');
+            return true;
+        }
+
+        function validarLocalizacao() {
+            const localizacao = document.getElementById('localizacao').value.trim();
+            
+            if (localizacao.length < 5) {
+                mostrarErro('erro-localizacao', 'Indique a localização para recolha (mínimo 5 caracteres)');
+                return false;
+            }
+            
+            esconderErro('erro-localizacao');
+            return true;
+        }
+
+        // Funções auxiliares
+        function mostrarErro(elementoId, mensagem) {
+            const erroDiv = document.getElementById(elementoId);
+            erroDiv.textContent = mensagem;
+            erroDiv.style.display = 'block';
+        }
+
+        function esconderErro(elementoId) {
+            document.getElementById(elementoId).style.display = 'none';
+        }
+
+        // Validação completa
+        function validarFormulario() {
+            let valido = true;
+            
+            // Validar dados pessoais
+            if (!validarNome()) valido = false;
+            if (!validarTelefone()) valido = false;
+            if (!validarLocalizacao()) valido = false;
+            
+            // Validar viagem
+            const origem = document.getElementById('origem').value;
+            const destino = document.getElementById('destino').value;
+            
+            if (!origem) {
+                mostrarErro('erro-origem', 'Selecione a origem');
+                valido = false;
+            } else {
+                esconderErro('erro-origem');
+            }
+            
+            if (!destino) {
+                mostrarErro('erro-destino', 'Selecione o destino');
+                valido = false;
+            } else if (origem === destino) {
+                mostrarErro('erro-destino', 'Origem e destino não podem ser iguais');
+                valido = false;
+            } else {
+                esconderErro('erro-destino');
+            }
+            
+            if (!validarData()) valido = false;
+            if (!validarHora()) valido = false;
+            
+            return valido;
+        }
+
+        // Criar mensagem para WhatsApp
+        function criarMensagemWhatsApp(dados) {
+            const dataFormatada = formatarData(dados.data);
+            
+            return `🚖 *NOVA RESERVA - TARRARFAL TRANSPORTES*
+
+📋 *DADOS DO CLIENTE:*
+• Nome: ${dados.nome}
+• Telefone: ${dados.telefone}
+• Localização: ${dados.localizacao}
+
+📍 *DETALHES DA VIAGEM:*
+• Rota: ${dados.origem} → ${dados.destino}
+• Data: ${dataFormatada}
+• Hora: ${dados.hora}
+• Passageiros: ${dados.passageiros}
+${dados.observacoes ? `• Observações: ${dados.observacoes}\n` : ''}
+💰 *VALORES:*
+• Preço base: ${dados.precoBase} Escudos
+• Total: *${dados.precoTotal} Escudos*
+
+📝 *INFORMAÇÕES DA RESERVA:*
+• Número: ${dados.numeroReserva}
+• Data da reserva: ${new Date().toLocaleDateString('pt-PT')}
+• Hora da reserva: ${new Date().toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'})}
+
+⚠️ *AÇÃO REQUERIDA:*
+1. Confirmar com o cliente
+2. Atribuir motorista
+3. Preparar veículo adequado`;
+        }
+
+        // Enviar para WhatsApp
+        function enviarParaWhatsApp(dados) {
+            const mensagem = criarMensagemWhatsApp(dados);
+            const mensagemCodificada = encodeURIComponent(mensagem);
+            
+            // Criar link do WhatsApp
+            const whatsappLink = `https://wa.me/238${NUMERO_WHATSAPP}?text=${mensagemCodificada}`;
+            
+            // Mostrar informação do WhatsApp
+            const whatsappInfo = document.getElementById('whatsapp-info');
+            const whatsappLinkElement = document.getElementById('whatsapp-link');
+            
+            whatsappLinkElement.href = whatsappLink;
+            whatsappInfo.style.display = 'block';
+            
+            // Abrir WhatsApp em nova aba
+            setTimeout(() => {
+                window.open(whatsappLink, '_blank');
+            }, 1000);
+            
+            return whatsappLink;
+        }
+
+        // Submissão do formulário
+        document.getElementById('formMarcacao').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            if (!validarFormulario()) {
+                return;
+            }
+            
+            // Coletar todos os dados
+            const dados = {
+                nome: document.getElementById('nome').value.trim(),
+                telefone: document.getElementById('telefone').value,
+                localizacao: document.getElementById('localizacao').value.trim(),
+                origem: document.getElementById('origem').value,
+                destino: document.getElementById('destino').value,
+                data: document.getElementById('data').value,
+                hora: document.getElementById('hora').value,
+                passageiros: document.getElementById('passageiros').value,
+                observacoes: document.getElementById('observacoes').value.trim(),
+                rota: `${document.getElementById('origem').value}-${document.getElementById('destino').value}`,
+                precoBase: precos[`${document.getElementById('origem').value}-${document.getElementById('destino').value}`] || 0,
+                precoTotal: calcularPrecoTotal(),
+                numeroReserva: 'RES' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
+            };
+            
+            // Desativar botão
+            const botao = document.getElementById('btn-submit');
+            botao.disabled = true;
+            botao.classList.add('loading');
+            botao.textContent = 'Enviando para WhatsApp...';
+            
+            // Simular processamento
+            setTimeout(() => {
+                // Enviar para WhatsApp
+                enviarParaWhatsApp(dados);
+                
+                // Mostrar confirmação ao cliente
+                mostrarConfirmacao(dados);
+                
+                // Resetar botão
+                setTimeout(() => {
+                    botao.disabled = false;
+                    botao.classList.remove('loading');
+                    botao.textContent = '✅ Reserva Enviada';
+                }, 2000);
+            }, 1500);
+        });
+
+        // Calcular preço total
+        function calcularPrecoTotal() {
+            const origem = document.getElementById('origem').value;
+            const destino = document.getElementById('destino').value;
+            const passageiros = parseInt(document.getElementById('passageiros').value);
+            const rota = `${origem}-${destino}`;
+            
+            let precoBase = precos[rota] || 0;
+            let precoTotal = precoBase;
+            
+            if (passageiros > 1) {
+                precoTotal = precoBase * passageiros;
+                if (passageiros >= 5) {
+                    precoTotal = precoBase * 4;
+                }
+            }
+            
+            return precoTotal;
+        }
+
+        // Mostrar confirmação
+        function mostrarConfirmacao(dados) {
+            const confirmacao = document.getElementById('confirmacao');
+            const dataFormatada = formatarData(dados.data);
+            
+            confirmacao.innerHTML = `
+                <div style="text-align: left;">
+                    <h3 style="color: #155724; margin-top: 0;">✅ Reserva Confirmada!</h3>
+                    <p><strong>Número da Reserva:</strong> ${dados.numeroReserva}</p>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                        <h4 style="margin-top: 0;">📋 Dados da Reserva</h4>
+                        <p><strong>Cliente:</strong> ${dados.nome}</p>
+                        <p><strong>Telefone:</strong> ${dados.telefone}</p>
+                        <p><strong>Local de Recolha:</strong> ${dados.localizacao}</p>
+                        <p><strong>Viagem:</strong> ${dados.origem} → ${dados.destino}</p>
+                        <p><strong>Data:</strong> ${dataFormatada}</p>
+                        <p><strong>Hora:</strong> ${dados.hora}</p>
+                        <p><strong>Passageiros:</strong> ${dados.passageiros}</p>
+                        ${dados.observacoes ? `<p><strong>Observações:</strong> ${dados.observacoes}</p>` : ''}
+                        <p><strong>Total a Pagar:</strong> <span style="font-size: 18px; color: #28a745;">${dados.precoTotal} Escudos</span></p>
+                    </div>
+                    
+                    <div style="background: #25D366; color: white; padding: 10px; border-radius: 5px;">
+                        <p style="margin: 0; font-size: 14px;">
+                            <strong>✅ RESERVA ENVIADA PARA WHATSAPP</strong>
+                        </p>
+                        <p style="margin: 5px 0 0 0; font-size: 13px;">
+                            A reserva foi enviada para o administrador (${NUMERO_DISPLAY}) para processamento.
+                            O motorista entrará em contacto brevemente.
+                        </p>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 10px; border-radius: 5px; border-left: 4px solid #ffc107; margin-top: 10px;">
+                        <p style="margin: 0; font-size: 14px;">
+                            <strong>📱 Importante:</strong> 
+                            Guarde este número de reserva: <strong>${dados.numeroReserva}</strong>
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            confirmacao.style.display = 'block';
+            confirmacao.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Formatar data
+        function formatarData(dataString) {
+            const data = new Date(dataString + 'T00:00:00');
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return data.toLocaleDateString('pt-PT', options);
+        }
+    </script>
+</body>
+</html>
