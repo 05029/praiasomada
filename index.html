@@ -3,355 +3,480 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Marcação de Transporte - Tarrafal Transportes</title>
+    <title>Tarrafal Transportes | Marcação de Transporte</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fa;
+        :root {
+            --primary-blue: #2563eb;     /* Azul mais vibrante e profissional */
+            --primary-dark: #1e40af;
+            --light-bg: #f8fafc;         /* Fundo muito claro e limpo */
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;     /* Cinza escuro para texto */
+            --text-secondary: #64748b;   /* Cinza médio */
+            --border-color: #e2e8f0;     /* Borda sutil */
+            --success: #10b981;          /* Verde para confirmações */
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
-            position: relative;
-            padding-bottom: 60px; /* Espaço para o rodapé */
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-            transition: transform 0.3s ease;
-            margin: 20px;
-        }
-
-        .container:hover {
-            transform: translateY(-5px);
-        }
-
-        h1 {
-            text-align: center;
-            color: #007bff;
-            margin-bottom: 30px;
-            font-size: 24px;
-        }
-
-        h2 {
-            color: #495057;
-            font-size: 18px;
-            margin: 25px 0 15px 0;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-            color: #495057;
-        }
-
-        select, input[type="date"], input[type="time"], 
-        input[type="text"], input[type="tel"], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
             box-sizing: border-box;
         }
 
-        select:focus, input:focus, textarea:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        button {
-            background-color: #007bff;
-            color: #fff;
-            padding: 14px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
+        /* Container principal com animação de entrada */
+        .main-container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            animation: containerFadeIn 0.8s ease-out;
             position: relative;
-            margin-top: 10px;
+            overflow: hidden;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .main-container:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
         }
 
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+        @keyframes containerFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
-        .loading::after {
+        /* Elemento decorativo azul no topo */
+        .main-container::before {
             content: '';
             position: absolute;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #fff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-            right: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-dark));
+            border-radius: 16px 16px 0 0;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        #preco {
+        /* Cabeçalho */
+        .header {
             text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: #28a745;
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            border-left: 4px solid #28a745;
+            margin-bottom: 40px;
         }
 
-        #confirmacao {
-            display: none;
-            text-align: center;
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 8px;
-            color: #155724;
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
-        .erro {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
+        .logo-icon {
+            font-size: 36px;
         }
 
-        .info {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 5px;
-            font-style: italic;
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
+        /* Seções do formulário com cartões */
         .form-section {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            background-color: var(--light-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
+        .form-section:hover {
+            border-color: var(--primary-blue);
+            background-color: rgba(37, 99, 235, 0.01);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-icon {
+            font-size: 20px;
+        }
+
+        /* Layout do formulário */
         .form-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
 
         .form-group {
             flex: 1;
         }
 
-        .required::after {
-            content: ' *';
-            color: #dc3545;
+        /* Labels e inputs com transições */
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            transition: color 0.2s;
         }
 
-        .whatsapp-info {
-            background-color: #25D366;
+        .required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            background-color: white;
+            color: var(--text-primary);
+            transition: all 0.3s;
+            appearance: none;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Container de preço com animação */
+        .price-container {
+            text-align: center;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 0;
+            border: 1px solid #bae6fd;
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .price-container.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .price-label {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .price-value {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .price-detail {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Botão principal com efeito */
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
             color: white;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 40px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::after {
+            left: 120%;
+        }
+
+        /* Confirmação com animação de entrada */
+        .confirmation {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+            display: none;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confirmation-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: var(--success);
+        }
+
+        .confirmation-icon {
+            font-size: 28px;
+        }
+
+        /* WhatsApp info */
+        .whatsapp-info {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
             text-align: center;
             display: none;
+            animation: fadeIn 0.5s ease-out;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
         }
 
-        .whatsapp-info a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .whatsapp-info a:hover {
-            text-decoration: underline;
-        }
-
-        /* RODAPÉ */
+        /* Rodapé */
         footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background-color: #f8f9fa;
+            margin-top: 40px;
             text-align: center;
-            padding: 20px 0;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
+            color: var(--text-secondary);
             font-size: 14px;
-        }
-
-        .footer-content {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .developer-credit {
-            font-size: 13px;
-            color: #495057;
-            margin-top: 5px;
-            font-style: italic;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 700px;
         }
 
         .developer-credit a {
-            color: #007bff;
+            color: var(--primary-blue);
             text-decoration: none;
-            transition: color 0.3s ease;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
         .developer-credit a:hover {
-            color: #0056b3;
+            color: var(--primary-dark);
             text-decoration: underline;
         }
 
-        /* RESPONSIVIDADE */
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            footer {
-                padding: 15px 0;
-            }
-            
-            body {
-                padding-bottom: 50px;
-            }
+        /* Estados de loading e desabilitado */
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
         }
 
-        @media (max-height: 700px) {
-            footer {
-                position: relative;
-                margin-top: 30px;
-            }
-            
-            body {
-                padding-bottom: 0;
-            }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
         }
     </style>
+    <!-- Fonte Inter do Google Fonts para tipografia moderna -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ícones do Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Marcação de Transporte - Tarrafal Transportes</h1>
-        
+    <div class="main-container">
+        <!-- Cabeçalho com Logo -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🚚</span>
+                Tarrafal Transportes
+            </div>
+            <p class="tagline">Marcação de transporte seguro e eficiente entre cidades em Cabo Verde</p>
+        </header>
+
         <form id="formMarcacao">
-            <!-- SEÇÃO 1: DADOS PESSOAIS -->
-            <div class="form-section">
-                <h2>📋 Dados Pessoais</h2>
+            <!-- Seção 1: Dados Pessoais -->
+            <section class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user section-icon"></i>
+                    Dados Pessoais
+                </h2>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="nome" class="required">Nome Completo:</label>
-                        <input type="text" id="nome" required 
-                               placeholder="Ex: João da Silva"
-                               minlength="3" maxlength="100">
-                        <div class="erro" id="erro-nome">Por favor, digite seu nome completo</div>
+                        <label for="nome" class="required">Nome Completo</label>
+                        <input type="text" id="nome" placeholder="Ex: João da Silva" required>
+                        <div class="error-message">Por favor, digite seu nome completo</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="telefone" class="required">Telefone:</label>
-                        <input type="tel" id="telefone" required 
-                               placeholder="Ex: 999 99 99"
-                               pattern="[0-9\s]{7,15}">
-                        <div class="info">Formato: 9 dígitos (ex: 999 99 99)</div>
-                        <div class="erro" id="erro-telefone">Digite um número de telefone válido</div>
+                        <label for="telefone" class="required">Telefone</label>
+                        <input type="tel" id="telefone" placeholder="Ex: 999 99 99" required>
+                        <div class="error-message">Digite um telefone válido (ex: 999 99 99)</div>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="localizacao" class="required">Localização para Recolha:</label>
-                    <input type="text" id="localizacao" required 
-                           placeholder="Ex: Rua Principal, Número, Bairro"
-                           minlength="5" maxlength="200">
-                    <div class="info">Endereço exato onde o transporte deve recolhê-lo</div>
-                    <div class="erro" id="erro-localizacao">Por favor, indique sua localização</div>
+                    <label for="localizacao" class="required">Localização para Recolha</label>
+                    <input type="text" id="localizacao" placeholder="Ex: Rua Principal, Número, Bairro" required>
+                    <div class="error-message">Por favor, indique a localização para recolha</div>
                 </div>
-            </div>
+            </section>
 
-            <!-- SEÇÃO 2: DETALHES DA VIAGEM -->
-            <div class="form-section">
-                <h2>📍 Detalhes da Viagem</h2>
+            <!-- Seção 2: Detalhes da Viagem -->
+            <section class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-route section-icon"></i>
+                    Detalhes da Viagem
+                </h2>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="origem" class="required">Origem:</label>
+                        <label for="origem" class="required">Origem</label>
                         <select id="origem" required>
                             <option value="">Selecione a origem</option>
                             <option value="Tarrafal">Tarrafal</option>
                             <option value="Assomada">Assomada</option>
                             <option value="Praia">Praia</option>
                         </select>
-                        <div class="erro" id="erro-origem">Por favor, selecione a origem</div>
+                        <div class="error-message">Por favor, selecione a origem</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="destino" class="required">Destino:</label>
+                        <label for="destino" class="required">Destino</label>
                         <select id="destino" required>
                             <option value="">Selecione o destino</option>
-                            <option value="Tarrafal">Tarrafal</option>
-                            <option value="Assomada">Assomada</option>
-                            <option value="Praia">Praia</option>
+                            <!-- As opções serão preenchidas por JavaScript -->
                         </select>
-                        <div class="erro" id="erro-destino">Por favor, selecione o destino</div>
+                        <div class="error-message">Por favor, selecione o destino</div>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="data" class="required">Data da Viagem:</label>
+                        <label for="data" class="required">Data da Viagem</label>
                         <input type="date" id="data" required>
-                        <div class="info">Apenas datas futuras</div>
-                        <div class="erro" id="erro-data">Selecione uma data válida</div>
+                        <div class="error-message">Selecione uma data válida</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="hora" class="required">Hora da Viagem:</label>
-                        <input type="time" id="hora" required>
-                        <div class="info">Horário: 05:00 - 22:00</div>
-                        <div class="erro" id="erro-hora">Selecione um horário válido</div>
+                        <label for="hora" class="required">Hora da Viagem</label>
+                        <input type="time" id="hora" required min="05:00" max="22:00">
+                        <div class="error-message">Selecione um horário entre 05:00 e 22:00</div>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="passageiros">Número de Passageiros:</label>
+                    <label for="passageiros">Número de Passageiros</label>
                     <select id="passageiros">
                         <option value="1">1 passageiro</option>
                         <option value="2">2 passageiros</option>
@@ -359,53 +484,88 @@
                         <option value="4">4 passageiros</option>
                         <option value="5">5 ou mais passageiros</option>
                     </select>
-                    <div class="info">Para 5+ passageiros, entre em contato para veículo adequado</div>
                 </div>
-            </div>
+            </section>
 
-            <!-- SEÇÃO 3: OBSERVAÇÕES -->
-            <div class="form-section">
-                <h2>💬 Observações (Opcional)</h2>
+            <!-- Seção 3: Observações -->
+            <section class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-comment-dots section-icon"></i>
+                    Observações (Opcional)
+                </h2>
                 <div class="form-group">
-                    <label for="observacoes">Observações Especiais:</label>
-                    <textarea id="observacoes" rows="3" 
-                              placeholder="Ex: Bagagem extra, necessidade de acessibilidade, criança pequena, etc."
-                              maxlength="500"></textarea>
-                    <div class="info">Máximo 500 caracteres</div>
+                    <label for="observacoes">Observações Especiais</label>
+                    <textarea id="observacoes" rows="3" placeholder="Ex: Bagagem extra, necessidade de acessibilidade, criança pequena, etc." maxlength="500"></textarea>
                 </div>
+            </section>
+
+            <!-- Container de Preço -->
+            <div class="price-container" id="priceContainer">
+                <div class="price-label">Preço estimado para</div>
+                <div class="price-value" id="priceValue">0 Escudos</div>
+                <div class="price-detail" id="priceDetail">Selecione origem e destino para calcular</div>
             </div>
 
-            <!-- PREÇO E BOTÃO -->
-            <div id="preco"></div>
-
-            <button type="submit" id="btn-submit">✅ Confirmar Reserva</button>
+            <!-- Botão de Envio -->
+            <button type="submit" class="submit-btn" id="btnSubmit">
+                <span id="btnText">Confirmar Reserva</span>
+            </button>
         </form>
 
-        <!-- INFORMAÇÃO DO WHATSAPP -->
-        <div id="whatsapp-info" class="whatsapp-info">
-            <p>📱 <strong>Reserva enviada para o WhatsApp!</strong></p>
-            <p>A mensagem foi enviada para o número: <strong>917 71 61</strong></p>
-            <p><a href="#" id="whatsapp-link" target="_blank">Clique aqui para abrir o WhatsApp</a></p>
+        <!-- Confirmação da Reserva -->
+        <div class="confirmation" id="confirmation">
+            <div class="confirmation-header">
+                <i class="fas fa-check-circle confirmation-icon"></i>
+                <h3>Reserva Confirmada!</h3>
+            </div>
+            <div id="confirmationContent">
+                <!-- O conteúdo será preenchido por JavaScript -->
+            </div>
         </div>
 
-        <div id="confirmacao"></div>
+        <!-- Informações do WhatsApp -->
+        <div class="whatsapp-info" id="whatsappInfo">
+            <p><i class="fab fa-whatsapp"></i> <strong>Reserva enviada para o WhatsApp!</strong></p>
+            <p>A mensagem foi enviada para o número: <strong>917 71 61</strong></p>
+            <p><a href="#" id="whatsappLink" target="_blank" style="color: white; text-decoration: underline;">Clique aqui para abrir o WhatsApp</a></p>
+        </div>
     </div>
 
-    <!-- RODAPÉ -->
+    <!-- Rodapé -->
     <footer>
-        <div class="footer-content">
-            <p>© 2024 Tarrafal Transportes - Todos os direitos reservados</p>
-            <p class="developer-credit">
-                Site feito por <a href="https://wa.me/2389177161?text=Olá%20Leonardo,%20vim%20pelo%20site%20do%20Tarrafal%20Transportes" 
-                                  target="_blank" 
-                                  title="Contactar Leonardo Nardy no WhatsApp">
-                    Leonardo Nardy
-                </a>
-            </p>
-        </div>
+        <p>© 2024 Tarrafal Transportes - Todos os direitos reservados</p>
+        <p class="developer-credit">Site feito por <a href="https://wa.me/2389177161?text=Olá%20Leonardo,%20vim%20pelo%20site%20do%20Tarrafal%20Transportes" target="_blank">Leonardo Nardy</a></p>
     </footer>
 
     <script>
+        // Configurações iniciais
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar data mínima como hoje
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('data').min = hoje;
+            
+            // Inicializar destinos
+            atualizarDestinos();
+            
+            // Configurar eventos
+            document.getElementById('origem').addEventListener('change', function() {
+                atualizarDestinos();
+                calcularPreco();
+            });
+            
+            document.getElementById('destino').addEventListener('change', calcularPreco);
+            document.getElementById('passageiros').addEventListener('change', calcularPreco);
+            
+            // Formatar telefone enquanto digita
+            document.getElementById('telefone').addEventListener('input', formatarTelefone);
+            
+            // Configurar validação em tempo real
+            setupRealTimeValidation();
+            
+            // Calcular preço inicial
+            setTimeout(calcularPreco, 300);
+        });
+
         // Preços das rotas
         const precos = {
             'Tarrafal-Assomada': 300,
@@ -416,52 +576,16 @@
             'Praia-Assomada': 500
         };
 
-        // Número WhatsApp para envio
-        const NUMERO_WHATSAPP = "9177161"; // Número sem espaços para URL
-        const NUMERO_DISPLAY = "917 71 61"; // Número formatado para display
-
-        // Cidades disponíveis
-        const cidades = ['Tarrafal', 'Assomada', 'Praia'];
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar data mínima (hoje)
-            const hoje = new Date();
-            const dataFormatada = hoje.toISOString().split('T')[0];
-            document.getElementById('data').min = dataFormatada;
-            
-            // Configurar hora (05:00 - 22:00)
-            document.getElementById('hora').min = '05:00';
-            document.getElementById('hora').max = '22:00';
-            
-            // Event listeners para cálculo de preço
-            document.getElementById('origem').addEventListener('change', function() {
-                atualizarDestinos();
-                calcularPreco();
-            });
-            
-            document.getElementById('destino').addEventListener('change', calcularPreco);
-            document.getElementById('passageiros').addEventListener('change', calcularPreco);
-            
-            // Event listeners para validação
-            document.getElementById('data').addEventListener('change', validarData);
-            document.getElementById('hora').addEventListener('change', validarHora);
-            
-            // Formatar telefone enquanto digita
-            document.getElementById('telefone').addEventListener('input', formatarTelefone);
-            
-            // Calcular preço inicial
-            calcularPreco();
-        });
-
-        // Atualizar opções de destino
+        // Atualizar destinos disponíveis
         function atualizarDestinos() {
             const origem = document.getElementById('origem').value;
             const destinoSelect = document.getElementById('destino');
-            const destinoAtual = destinoSelect.value;
+            const cidades = ['Tarrafal', 'Assomada', 'Praia'];
             
+            // Limpar opções atuais
             destinoSelect.innerHTML = '<option value="">Selecione o destino</option>';
             
+            // Adicionar todas as cidades exceto a origem selecionada
             cidades.forEach(cidade => {
                 if (cidade !== origem) {
                     const option = document.createElement('option');
@@ -471,21 +595,16 @@
                 }
             });
             
-            if (destinoAtual === origem) {
-                destinoSelect.value = '';
-                esconderErro('erro-destino');
-            }
+            // Validar se destino atual ainda é válido
+            validarCampo('destino');
         }
 
-        // Formatar telefone
+        // Formatar número de telefone
         function formatarTelefone(event) {
             let valor = event.target.value.replace(/\D/g, '');
             
-            if (valor.length > 9) {
-                valor = valor.substring(0, 9);
-            }
+            if (valor.length > 9) valor = valor.substring(0, 9);
             
-            // Formatar: XXX XX XX ou XXX XXX XXX
             if (valor.length > 6) {
                 valor = valor.replace(/(\d{3})(\d{2})(\d{2})/, '$1 $2 $3');
             } else if (valor.length > 4) {
@@ -493,160 +612,143 @@
             }
             
             event.target.value = valor;
+            validarCampo('telefone');
         }
 
-        // Calcular preço
+        // Calcular e mostrar preço
         function calcularPreco() {
             const origem = document.getElementById('origem').value;
             const destino = document.getElementById('destino').value;
-            const passageiros = parseInt(document.getElementById('passageiros').value);
-            const precoDiv = document.getElementById('preco');
+            const passageiros = parseInt(document.getElementById('passageiros').value) || 1;
+            const priceContainer = document.getElementById('priceContainer');
+            const priceValue = document.getElementById('priceValue');
+            const priceDetail = document.getElementById('priceDetail');
             
             if (origem && destino && origem !== destino) {
                 const rota = `${origem}-${destino}`;
-                let precoBase = precos[rota];
+                const precoBase = precos[rota];
                 
                 if (precoBase) {
-                    // Ajustar preço para múltiplos passageiros
+                    // Calcular preço total
                     let precoTotal = precoBase;
                     if (passageiros > 1) {
                         precoTotal = precoBase * passageiros;
                         if (passageiros >= 5) {
-                            precoTotal = precoBase * 4; // Desconto para grupos
+                            precoTotal = precoBase * 4; // Desconto para grupos grandes
                         }
                     }
                     
-                    precoDiv.innerHTML = `
-                        <div style="font-size: 16px; color: #495057;">Preço da rota ${origem} → ${destino}:</div>
-                        <div style="font-size: 24px;">${precoTotal} Escudos</div>
-                        ${passageiros > 1 ? `<div style="font-size: 14px; color: #6c757d;">(${precoBase} × ${passageiros} passageiros)</div>` : ''}
-                    `;
-                    precoDiv.style.display = 'block';
+                    // Atualizar exibição do preço
+                    priceValue.textContent = `${precoTotal} Escudos`;
+                    
+                    if (passageiros > 1) {
+                        priceDetail.textContent = `${precoBase} × ${passageiros} passageiros`;
+                        if (passageiros >= 5) {
+                            priceDetail.textContent += ' (desconto para grupo aplicado)';
+                        }
+                    } else {
+                        priceDetail.textContent = `Preço para 1 passageiro na rota ${origem} → ${destino}`;
+                    }
+                    
+                    // Mostrar container com animação
+                    priceContainer.classList.add('visible');
                 } else {
-                    precoDiv.textContent = 'Preço não disponível para esta rota';
-                    precoDiv.style.color = '#dc3545';
+                    priceValue.textContent = 'Rota não disponível';
+                    priceDetail.textContent = 'Entre em contato para outras rotas';
+                    priceContainer.classList.add('visible');
                 }
             } else {
-                precoDiv.textContent = 'Selecione origem e destino para ver o preço';
-                precoDiv.style.color = '#6c757d';
+                priceContainer.classList.remove('visible');
             }
         }
 
-        // Validações
-        function validarData() {
-            const dataInput = document.getElementById('data');
-            const dataSelecionada = new Date(dataInput.value);
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
+        // Configurar validação em tempo real
+        function setupRealTimeValidation() {
+            const campos = ['nome', 'telefone', 'localizacao', 'origem', 'destino', 'data', 'hora'];
             
-            if (dataSelecionada < hoje) {
-                mostrarErro('erro-data', 'A data não pode ser no passado');
-                return false;
-            }
-            
-            esconderErro('erro-data');
-            return true;
+            campos.forEach(campoId => {
+                const elemento = document.getElementById(campoId);
+                if (elemento) {
+                    elemento.addEventListener('blur', () => validarCampo(campoId));
+                    elemento.addEventListener('input', () => {
+                        const formGroup = elemento.closest('.form-group');
+                        if (formGroup) formGroup.classList.remove('error');
+                    });
+                }
+            });
         }
 
-        function validarHora() {
-            const horaInput = document.getElementById('hora').value;
-            
-            if (!horaInput) {
-                mostrarErro('erro-hora', 'Selecione um horário');
-                return false;
-            }
-            
-            const hora = parseInt(horaInput.split(':')[0]);
-            
-            if (hora < 5 || hora > 22) {
-                mostrarErro('erro-hora', 'Horário fora do funcionamento (05:00 - 22:00)');
-                return false;
-            }
-            
-            esconderErro('erro-hora');
-            return true;
-        }
-
-        function validarTelefone() {
-            const telefone = document.getElementById('telefone').value;
-            const telefoneNumerico = telefone.replace(/\D/g, '');
-            
-            if (telefoneNumerico.length < 7) {
-                mostrarErro('erro-telefone', 'Digite um telefone válido (mínimo 7 dígitos)');
-                return false;
-            }
-            
-            esconderErro('erro-telefone');
-            return true;
-        }
-
-        function validarNome() {
-            const nome = document.getElementById('nome').value.trim();
-            
-            if (nome.length < 3) {
-                mostrarErro('erro-nome', 'Digite seu nome completo (mínimo 3 caracteres)');
-                return false;
-            }
-            
-            esconderErro('erro-nome');
-            return true;
-        }
-
-        function validarLocalizacao() {
-            const localizacao = document.getElementById('localizacao').value.trim();
-            
-            if (localizacao.length < 5) {
-                mostrarErro('erro-localizacao', 'Indique a localização para recolha (mínimo 5 caracteres)');
-                return false;
-            }
-            
-            esconderErro('erro-localizacao');
-            return true;
-        }
-
-        // Funções auxiliares
-        function mostrarErro(elementoId, mensagem) {
-            const erroDiv = document.getElementById(elementoId);
-            erroDiv.textContent = mensagem;
-            erroDiv.style.display = 'block';
-        }
-
-        function esconderErro(elementoId) {
-            document.getElementById(elementoId).style.display = 'none';
-        }
-
-        // Validação completa
-        function validarFormulario() {
+        // Validar um campo específico
+        function validarCampo(campoId) {
+            const elemento = document.getElementById(campoId);
+            const valor = elemento.value.trim();
+            const formGroup = elemento.closest('.form-group');
             let valido = true;
             
-            // Validar dados pessoais
-            if (!validarNome()) valido = false;
-            if (!validarTelefone()) valido = false;
-            if (!validarLocalizacao()) valido = false;
+            switch(campoId) {
+                case 'nome':
+                    valido = valor.length >= 3;
+                    break;
+                case 'telefone':
+                    const numeros = valor.replace(/\D/g, '');
+                    valido = numeros.length >= 7;
+                    break;
+                case 'localizacao':
+                    valido = valor.length >= 5;
+                    break;
+                case 'origem':
+                case 'destino':
+                    valido = valor !== '';
+                    break;
+                case 'data':
+                    const dataSelecionada = new Date(valor);
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+                    valido = valor && dataSelecionada >= hoje;
+                    break;
+                case 'hora':
+                    if (valor) {
+                        const hora = parseInt(valor.split(':')[0]);
+                        valido = hora >= 5 && hora <= 22;
+                    } else {
+                        valido = false;
+                    }
+                    break;
+            }
             
-            // Validar viagem
+            if (formGroup) {
+                if (!valido && elemento.hasAttribute('required')) {
+                    formGroup.classList.add('error');
+                } else {
+                    formGroup.classList.remove('error');
+                }
+            }
+            
+            return valido;
+        }
+
+        // Validar formulário completo
+        function validarFormulario() {
+            const campos = ['nome', 'telefone', 'localizacao', 'origem', 'destino', 'data', 'hora'];
+            let valido = true;
+            
+            campos.forEach(campoId => {
+                if (!validarCampo(campoId)) {
+                    valido = false;
+                }
+            });
+            
+            // Validação adicional: origem não pode ser igual ao destino
             const origem = document.getElementById('origem').value;
             const destino = document.getElementById('destino').value;
             
-            if (!origem) {
-                mostrarErro('erro-origem', 'Selecione a origem');
+            if (origem && destino && origem === destino) {
+                const destinoGroup = document.getElementById('destino').closest('.form-group');
+                destinoGroup.classList.add('error');
+                const errorMsg = destinoGroup.querySelector('.error-message');
+                if (errorMsg) errorMsg.textContent = 'Origem e destino não podem ser iguais';
                 valido = false;
-            } else {
-                esconderErro('erro-origem');
             }
-            
-            if (!destino) {
-                mostrarErro('erro-destino', 'Selecione o destino');
-                valido = false;
-            } else if (origem === destino) {
-                mostrarErro('erro-destino', 'Origem e destino não podem ser iguais');
-                valido = false;
-            } else {
-                esconderErro('erro-destino');
-            }
-            
-            if (!validarData()) valido = false;
-            if (!validarHora()) valido = false;
             
             return valido;
         }
@@ -683,27 +785,15 @@ ${dados.observacoes ? `• Observações: ${dados.observacoes}\n` : ''}
 3. Preparar veículo adequado`;
         }
 
-        // Enviar para WhatsApp
-        function enviarParaWhatsApp(dados) {
-            const mensagem = criarMensagemWhatsApp(dados);
-            const mensagemCodificada = encodeURIComponent(mensagem);
-            
-            // Criar link do WhatsApp
-            const whatsappLink = `https://wa.me/238${NUMERO_WHATSAPP}?text=${mensagemCodificada}`;
-            
-            // Mostrar informação do WhatsApp
-            const whatsappInfo = document.getElementById('whatsapp-info');
-            const whatsappLinkElement = document.getElementById('whatsapp-link');
-            
-            whatsappLinkElement.href = whatsappLink;
-            whatsappInfo.style.display = 'block';
-            
-            // Abrir WhatsApp em nova aba
-            setTimeout(() => {
-                window.open(whatsappLink, '_blank');
-            }, 1000);
-            
-            return whatsappLink;
+        // Formatar data
+        function formatarData(dataString) {
+            const data = new Date(dataString + 'T00:00:00');
+            return data.toLocaleDateString('pt-PT', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
         }
 
         // Submissão do formulário
@@ -711,10 +801,15 @@ ${dados.observacoes ? `• Observações: ${dados.observacoes}\n` : ''}
             event.preventDefault();
             
             if (!validarFormulario()) {
+                // Rolar até o primeiro erro
+                const primeiroErro = document.querySelector('.form-group.error');
+                if (primeiroErro) {
+                    primeiroErro.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 return;
             }
             
-            // Coletar todos os dados
+            // Coletar dados do formulário
             const dados = {
                 nome: document.getElementById('nome').value.trim(),
                 telefone: document.getElementById('telefone').value,
@@ -731,105 +826,100 @@ ${dados.observacoes ? `• Observações: ${dados.observacoes}\n` : ''}
                 numeroReserva: 'RES' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
             };
             
-            // Desativar botão
-            const botao = document.getElementById('btn-submit');
-            botao.disabled = true;
-            botao.classList.add('loading');
-            botao.textContent = 'Enviando para WhatsApp...';
+            // Calcular preço total (função auxiliar)
+            function calcularPrecoTotal() {
+                const origem = document.getElementById('origem').value;
+                const destino = document.getElementById('destino').value;
+                const passageiros = parseInt(document.getElementById('passageiros').value) || 1;
+                const rota = `${origem}-${destino}`;
+                
+                let precoBase = precos[rota] || 0;
+                let precoTotal = precoBase;
+                
+                if (passageiros > 1) {
+                    precoTotal = precoBase * passageiros;
+                    if (passageiros >= 5) {
+                        precoTotal = precoBase * 4;
+                    }
+                }
+                
+                return precoTotal;
+            }
             
-            // Simular processamento
+            // Mostrar estado de loading
+            const botao = document.getElementById('btnSubmit');
+            const btnText = document.getElementById('btnText');
+            btnText.textContent = 'Processando...';
+            botao.classList.add('loading');
+            botao.disabled = true;
+            
+            // Simular processamento (em sistema real seria uma chamada AJAX)
             setTimeout(() => {
                 // Enviar para WhatsApp
-                enviarParaWhatsApp(dados);
+                const mensagem = criarMensagemWhatsApp(dados);
+                const mensagemCodificada = encodeURIComponent(mensagem);
+                const whatsappLink = `https://wa.me/2389177161?text=${mensagemCodificada}`;
                 
-                // Mostrar confirmação ao cliente
+                // Atualizar link do WhatsApp
+                document.getElementById('whatsappLink').href = whatsappLink;
+                
+                // Mostrar confirmação
                 mostrarConfirmacao(dados);
                 
-                // Resetar botão
+                // Mostrar info do WhatsApp
+                document.getElementById('whatsappInfo').style.display = 'block';
+                
+                // Abrir WhatsApp em nova aba após um breve delay
                 setTimeout(() => {
-                    botao.disabled = false;
+                    window.open(whatsappLink, '_blank');
+                }, 800);
+                
+                // Restaurar botão
+                setTimeout(() => {
+                    btnText.textContent = 'Reserva Enviada!';
                     botao.classList.remove('loading');
-                    botao.textContent = '✅ Reserva Enviada';
-                }, 2000);
+                    
+                    // Opcional: resetar formulário após alguns segundos
+                    // setTimeout(() => {
+                    //     document.getElementById('formMarcacao').reset();
+                    //     btnText.textContent = 'Confirmar Reserva';
+                    //     botao.disabled = false;
+                    //     document.getElementById('confirmation').style.display = 'none';
+                    //     document.getElementById('whatsappInfo').style.display = 'none';
+                    //     atualizarDestinos();
+                    //     calcularPreco();
+                    // }, 5000);
+                }, 1500);
             }, 1500);
         });
 
-        // Calcular preço total
-        function calcularPrecoTotal() {
-            const origem = document.getElementById('origem').value;
-            const destino = document.getElementById('destino').value;
-            const passageiros = parseInt(document.getElementById('passageiros').value);
-            const rota = `${origem}-${destino}`;
-            
-            let precoBase = precos[rota] || 0;
-            let precoTotal = precoBase;
-            
-            if (passageiros > 1) {
-                precoTotal = precoBase * passageiros;
-                if (passageiros >= 5) {
-                    precoTotal = precoBase * 4;
-                }
-            }
-            
-            return precoTotal;
-        }
-
         // Mostrar confirmação
         function mostrarConfirmacao(dados) {
-            const confirmacao = document.getElementById('confirmacao');
+            const confirmation = document.getElementById('confirmation');
+            const confirmationContent = document.getElementById('confirmationContent');
             const dataFormatada = formatarData(dados.data);
             
-            confirmacao.innerHTML = `
-                <div style="text-align: left;">
-                    <h3 style="color: #155724; margin-top: 0;">✅ Reserva Confirmada!</h3>
-                    <p><strong>Número da Reserva:</strong> ${dados.numeroReserva}</p>
-                    
-                    <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                        <h4 style="margin-top: 0;">📋 Dados da Reserva</h4>
-                        <p><strong>Cliente:</strong> ${dados.nome}</p>
-                        <p><strong>Telefone:</strong> ${dados.telefone}</p>
-                        <p><strong>Local de Recolha:</strong> ${dados.localizacao}</p>
-                        <p><strong>Viagem:</strong> ${dados.origem} → ${dados.destino}</p>
-                        <p><strong>Data:</strong> ${dataFormatada}</p>
-                        <p><strong>Hora:</strong> ${dados.hora}</p>
-                        <p><strong>Passageiros:</strong> ${dados.passageiros}</p>
-                        ${dados.observacoes ? `<p><strong>Observações:</strong> ${dados.observacoes}</p>` : ''}
-                        <p><strong>Total a Pagar:</strong> <span style="font-size: 18px; color: #28a745;">${dados.precoTotal} Escudos</span></p>
-                    </div>
-                    
-                    <div style="background: #25D366; color: white; padding: 10px; border-radius: 5px;">
-                        <p style="margin: 0; font-size: 14px;">
-                            <strong>✅ RESERVA ENVIADA PARA WHATSAPP</strong>
-                        </p>
-                        <p style="margin: 5px 0 0 0; font-size: 13px;">
-                            A reserva foi enviada para o administrador (${NUMERO_DISPLAY}) para processamento.
-                            O motorista entrará em contacto brevemente.
-                        </p>
-                    </div>
-                    
-                    <div style="background: #fff3cd; padding: 10px; border-radius: 5px; border-left: 4px solid #ffc107; margin-top: 10px;">
-                        <p style="margin: 0; font-size: 14px;">
-                            <strong>📱 Importante:</strong> 
-                            Guarde este número de reserva: <strong>${dados.numeroReserva}</strong>
-                        </p>
-                    </div>
+            confirmationContent.innerHTML = `
+                <p><strong>Número da Reserva:</strong> ${dados.numeroReserva}</p>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <h4 style="margin-top: 0; color: var(--text-primary);">📋 Dados da Reserva</h4>
+                    <p><strong>Cliente:</strong> ${dados.nome}</p>
+                    <p><strong>Telefone:</strong> ${dados.telefone}</p>
+                    <p><strong>Local de Recolha:</strong> ${dados.localizacao}</p>
+                    <p><strong>Viagem:</strong> ${dados.origem} → ${dados.destino}</p>
+                    <p><strong>Data:</strong> ${dataFormatada}</p>
+                    <p><strong>Hora:</strong> ${dados.hora}</p>
+                    <p><strong>Passageiros:</strong> ${dados.passageiros}</p>
+                    ${dados.observacoes ? `<p><strong>Observações:</strong> ${dados.observacoes}</p>` : ''}
+                    <p><strong>Total a Pagar:</strong> <span style="font-size: 18px; color: var(--success); font-weight: bold;">${dados.precoTotal} Escudos</span></p>
                 </div>
+                <p style="font-size: 14px; color: var(--text-secondary);">
+                    O motorista entrará em contacto brevemente para confirmar os detalhes da viagem.
+                </p>
             `;
             
-            confirmacao.style.display = 'block';
-            confirmacao.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Formatar data
-        function formatarData(dataString) {
-            const data = new Date(dataString + 'T00:00:00');
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            };
-            return data.toLocaleDateString('pt-PT', options);
+            confirmation.style.display = 'block';
+            confirmation.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     </script>
 </body>
